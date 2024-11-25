@@ -4,6 +4,7 @@
   "publisher": "okraks",
   "license":"MIT",
   "description": "Typescript code formatter",
+  "repository": "https://github.com/okraks/contour-flow-vs-code-extension",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.54.0"
