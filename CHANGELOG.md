@@ -2,7 +2,7 @@
 
 All notable changes to the ContourFlow extension will be documented in this file.
 
-## Version 0.0.1 
+## Version 0.0.1
 
 ### Added
 
@@ -18,4 +18,10 @@ All notable changes to the ContourFlow extension will be documented in this file
 
 - v0.0.1 Ensures there is exactly 1 line between functions in a .tsx file
 
-- v0.0.1 Ensures there is 1 line between a return statement and end of the function block 
+- v0.0.1 Ensures there is 1 line between a return statement and end of the function block
+
+## Version 0.0.2
+
+### Change
+
+- v0.0.2 Removed auto-add semi-colons cos it's buggy

@@ -16,7 +16,7 @@ function addMissingSemicolon(lineText: string): string {
         lineText.trim().endsWith('{') ||
         lineText.trim().endsWith('}') ||
         lineText.trim().endsWith(',') ||
-         lineText.trim().includes(':') ||
+        lineText.trim().includes(':') ||
         lineText.trim() === ''
     ) {
         return lineText;
@@ -35,7 +35,7 @@ function addMissingSemicolon(lineText: string): string {
 
     if (shouldEndWithSemicolon) {
         // console.log("should end with semicolon", shouldEndWithSemicolon, lineText.trimEnd());
-        return `${lineText.trimEnd()};`;
+        return `${ lineText.trimEnd() };`;
     }
 
     return lineText;
@@ -61,27 +61,27 @@ export function formatDocument(document: vscode.TextDocument): vscode.TextEdit[]
         const currentLine = lines[i];
 
         // ^ Rule 1: 3 lines after import statements
-        if (currentLine.trim().startsWith('import') && !lines[i+1].trim().startsWith('import')) {
+        if (currentLine.trim().startsWith('import') && !lines[i + 1].trim().startsWith('import')) {
 
             // TODO: Make it configurable later so that users specify the lines they want after imports
 
-            if(lines[i + 1]?.trim() !== '' && !lines[i+1].startsWith('import') && !lines[i+2].trim().startsWith('import') && !lines[i+3].trim().startsWith('import')){
+            if (lines[i + 1]?.trim() !== '' && !lines[i + 1].startsWith('import') && !lines[i + 2].trim().startsWith('import') && !lines[i + 3].trim().startsWith('import')) {
                 edits.push(vscode.TextEdit.insert(new vscode.Position(i + 1, 0), '\n\n\n'));
             }
 
-            if(lines[i + 2]?.trim() !== '' && !lines[i+2].trim().startsWith('import') && !lines[i+3].trim().startsWith('import')){
+            if (lines[i + 2]?.trim() !== '' && !lines[i + 2].trim().startsWith('import') && !lines[i + 3].trim().startsWith('import')) {
                 edits.push(vscode.TextEdit.insert(new vscode.Position(i + 2, 0), '\n\n'));
             }
 
-            if(lines[i + 3]?.trim() !== '' && !lines[i+3].trim().startsWith('import')){
+            if (lines[i + 3]?.trim() !== '' && !lines[i + 3].trim().startsWith('import')) {
                 edits.push(vscode.TextEdit.insert(new vscode.Position(i + 3, 0), '\n'));
             }
-         }
+        }
 
         //  ^ Rule 2: All imports must end with semicolons
-        if(currentLine.startsWith('import') && !currentLine.endsWith(';')){
-        
-            const addedSemiColonToLine =  `${currentLine.trimEnd()};`;
+        if (currentLine.startsWith('import') && !currentLine.endsWith(';')) {
+
+            const addedSemiColonToLine = `${ currentLine.trimEnd() };`;
 
             const line = document.lineAt(i);
 
@@ -90,7 +90,7 @@ export function formatDocument(document: vscode.TextDocument): vscode.TextEdit[]
 
         // ^ Rule 3: 3 lines before return in .tsx files
         if (document.fileName.endsWith('.tsx') && currentLine.trim().startsWith('return')) {
-       
+
             if (lines[i - 1]?.trim() !== '') {
                 edits.push(vscode.TextEdit.insert(new vscode.Position(i, 0), '\n\n\n'));
             }
@@ -105,7 +105,7 @@ export function formatDocument(document: vscode.TextDocument): vscode.TextEdit[]
 
         // ^ Rule 4: 1 line before return in .ts files
         if (document.fileName.endsWith('.ts') && currentLine.trim().startsWith('return')) {
-           
+
             // add new empty line above return if the previous line is not empty
             if (lines[i - 1]?.trim() !== '') {
                 edits.push(vscode.TextEdit.insert(new vscode.Position(i, 0), '\n'));
@@ -113,16 +113,16 @@ export function formatDocument(document: vscode.TextDocument): vscode.TextEdit[]
 
 
             // delete all empty lines above first empty line above return statement
-            for(let j=i-2; j>= 0; j--){
+            for (let j = i - 2; j >= 0; j--) {
                 if (lines[j]?.trim() === '') {
-                   const line = document.lineAt(j);
-                   const rangeToDelete = new vscode.Range(
+                    const line = document.lineAt(j);
+                    const rangeToDelete = new vscode.Range(
                         line.range.start,
                         new vscode.Position(line.lineNumber + 1, 0)
                     );
                     edits.push(vscode.TextEdit.replace(rangeToDelete, ''));
 
-                 } else {
+                } else {
                     // Stop deleting once a non-empty line is found
                     break;
                 }
@@ -134,27 +134,27 @@ export function formatDocument(document: vscode.TextDocument): vscode.TextEdit[]
             document.fileName.endsWith('.ts') &&
             !document.fileName.endsWith('.tsx') &&
             currentLine.trim().endsWith('}')
-            
+
         ) {
-            if((lines[i + 1]?.trim().startsWith('function') || lines[i + 1]?.trim().includes('=>'))){
+            if ((lines[i + 1]?.trim().startsWith('function') || lines[i + 1]?.trim().includes('=>'))) {
                 edits.push(vscode.TextEdit.insert(new vscode.Position(i + 1, 0), '\n\n'));
             }
 
-            if((lines[i + 2]?.trim().startsWith('function') || lines[i + 2]?.trim().includes('=>'))){
+            if ((lines[i + 2]?.trim().startsWith('function') || lines[i + 2]?.trim().includes('=>'))) {
                 edits.push(vscode.TextEdit.insert(new vscode.Position(i + 1, 0), '\n'));
             }
 
             // delete extra empty lines
-            for(let j=i+3; j<= lines.length; j++){
+            for (let j = i + 3; j <= lines.length; j++) {
                 if (lines[j]?.trim() === '') {
-                const line = document.lineAt(j);
-                const rangeToDelete = new vscode.Range(
-                    line.range.start,
-                    new vscode.Position(line.lineNumber + 1, 0)
-                );
-                edits.push(vscode.TextEdit.replace(rangeToDelete, ''));
+                    const line = document.lineAt(j);
+                    const rangeToDelete = new vscode.Range(
+                        line.range.start,
+                        new vscode.Position(line.lineNumber + 1, 0)
+                    );
+                    edits.push(vscode.TextEdit.replace(rangeToDelete, ''));
 
-                } else {  break; }
+                } else { break; }
             }
         }
 
@@ -164,43 +164,16 @@ export function formatDocument(document: vscode.TextDocument): vscode.TextEdit[]
             currentLine.trim().endsWith('}') &&
             lines[i + 1]?.trim().startsWith('function')
         ) {
-             if((lines[i + 1]?.trim().startsWith('function') || lines[i + 1]?.trim().includes('=>'))){
+            if ((lines[i + 1]?.trim().startsWith('function') || lines[i + 1]?.trim().includes('=>'))) {
                 edits.push(vscode.TextEdit.insert(new vscode.Position(i + 1, 0), '\n\n'));
             }
 
-            if((lines[i + 2]?.trim().startsWith('function') || lines[i + 2]?.trim().includes('=>'))){
+            if ((lines[i + 2]?.trim().startsWith('function') || lines[i + 2]?.trim().includes('=>'))) {
                 edits.push(vscode.TextEdit.insert(new vscode.Position(i + 1, 0), '\n'));
             }
 
             // delete extra empty lines
-            for(let j=i+3; j<= lines.length; j++){
-                if (lines[j]?.trim() === '') {
-                const line = document.lineAt(j);
-                const rangeToDelete = new vscode.Range(
-                    line.range.start,
-                    new vscode.Position(line.lineNumber + 1, 0)
-                );
-                edits.push(vscode.TextEdit.replace(rangeToDelete, ''));
-
-                } 
-                else {  
-                    break; 
-                }
-            }
-        }
-
-        //^ Rule 7: 1 line between return and whatever comes next
-        if (currentLine.trim().startsWith('return')) {
-            // add new empty line above return if the previous line is not empty
-            if (lines[i + 1]?.trim() !== '') {
-                edits.push(vscode.TextEdit.insert(new vscode.Position(i+1, 0), '\n'));
-            }
-         }
-
-        // ^ Rule 8: Delete all empty lines above first empty line above } statement
-        if ( currentLine.trim().endsWith('}')) {
-         
-            for(let j = i-2; j>= 0; j--){
+            for (let j = i + 3; j <= lines.length; j++) {
                 if (lines[j]?.trim() === '') {
                     const line = document.lineAt(j);
                     const rangeToDelete = new vscode.Range(
@@ -209,19 +182,46 @@ export function formatDocument(document: vscode.TextDocument): vscode.TextEdit[]
                     );
                     edits.push(vscode.TextEdit.replace(rangeToDelete, ''));
 
-                    } else {
+                }
+                else {
+                    break;
+                }
+            }
+        }
+
+        //^ Rule 7: 1 line between return and whatever comes next
+        if (currentLine.trim().startsWith('return')) {
+            // add new empty line above return if the previous line is not empty
+            if (lines[i + 1]?.trim() !== '') {
+                edits.push(vscode.TextEdit.insert(new vscode.Position(i + 1, 0), '\n'));
+            }
+        }
+
+        // ^ Rule 8: Delete all empty lines above first empty line above } statement
+        if (currentLine.trim().endsWith('}')) {
+
+            for (let j = i - 2; j >= 0; j--) {
+                if (lines[j]?.trim() === '') {
+                    const line = document.lineAt(j);
+                    const rangeToDelete = new vscode.Range(
+                        line.range.start,
+                        new vscode.Position(line.lineNumber + 1, 0)
+                    );
+                    edits.push(vscode.TextEdit.replace(rangeToDelete, ''));
+
+                } else {
                     // Stop deleting once a non-empty line is found
                     break;
                 }
             }
         }
 
-        // ^ Rule 9: Adds Semicolons to lines that expect semi colons
-        const line = document.lineAt(i);
-        const correctedLine = addMissingSemicolon(line.text);
-        if (line.text !== correctedLine) {
-            edits.push(vscode.TextEdit.replace(line.range, correctedLine));
-        }
+        // ^ Rule 9: Adds Semicolons to lines that expect semi colons - Buggy
+        // const line = document.lineAt(i);
+        // const correctedLine = addMissingSemicolon(line.text);
+        // if (line.text !== correctedLine) {
+        //     edits.push(vscode.TextEdit.replace(line.range, correctedLine));
+        // }
     }
 
     // TODO: ADD INDENTATION LATER
